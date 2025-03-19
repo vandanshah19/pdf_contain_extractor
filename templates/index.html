@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with PDF</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color:rgb(242, 242, 242);
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            max-width: 400px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2, h3 {
+            color: #333;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #answer {
+            font-weight: bold;
+            color: #007BFF;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Upload PDF</h2>
+        <input type="file" id="pdfFile">
+        <button onclick="uploadPDF()">Upload</button>
+        
+        <h2>Ask a Question</h2>
+        <input type="text" id="question" placeholder="Enter your question">
+        <button onclick="askQuestion()">Ask</button>
+        
+        <h3>Answer:</h3>
+        <p id="answer"></p>
+    </div>
+
+    <script>
+        async function uploadPDF() {
+            let fileInput = document.getElementById("pdfFile");
+            let file = fileInput.files[0];
+            if (!file) {
+                alert("Please select a file");
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append("file", file);
+
+            let response = await fetch("/upload", {
+                method: "POST",
+                body: formData
+            });
+
+            let result = await response.json();
+            alert(result.message);
+        }
+
+        async function askQuestion() {
+            let question = document.getElementById("question").value;
+            if (!question) {
+                alert("Enter a question");
+                return;
+            }
+
+            let response = await fetch("/ask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question })
+            });
+
+            let result = await response.json();
+            document.getElementById("answer").innerText = result.answer;
+        }
+    </script>
+</body>
+</html>
